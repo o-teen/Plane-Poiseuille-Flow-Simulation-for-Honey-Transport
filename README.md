@@ -26,19 +26,19 @@ Under these conditions, the honey flow will transition from uniform inlet veloci
 
 For plane Poiseuille flow between plates at ```y = 0``` and ```y = D```: 
 
-$$
+```math
 \begin{align}
 u(y) = u_{max}(1 - (\frac{2y}{D} - 1)^2)
 \end{align}
-$$
+```
 
 , with
 
-$$
+```math
 \begin{align}
 u_{max} = \frac{3}{2}u_{avg}
 \end{align}
-$$
+```
 
 
 ### 1.2 Objectives
@@ -57,28 +57,28 @@ The following flow assumptions define the physical regime of the model:
 - Uniform plate separation
 - Negligible gravity
 
-<p align = center>
+<br>
+
 <em>Table 1. Physical Setup</em>
 
 | D $(m)$ | ${u_{in}}$ $(ms^{-1})$ |  $\nu$ $(Pa\cdot s)$ | $\rho$ $(kg\cdot m^{-3})$|
 |:---:|:---:|:---:|:---:|
 |0.1|0.05|0.005|1430|
 
-</p>
-
---- 
 
 ### 2.2 Reynolds Number Verification
 ---
-$$
+```math
 \begin{align}
 \mathbf{Re} = \frac{u_{in}\cdot D}{\nu} = 1
 \end{align}
-$$
+```
 
 
 Since:  
-$$\mathbf{Re < 2000}$$
+```math
+\mathbf{Re < 2000}
+```
 , the flow is laminar. 
 
 <p style="text-align: center"><img src="gif/example_plane_poiseuille_flow.png">
@@ -89,34 +89,34 @@ $$\mathbf{Re < 2000}$$
 The flow is governed by the 2-D incompressible Navier-Stokes Equation: 
 - Momentum (x-direction):
 
-$$
+```math
 \begin{align}
 \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = \frac{-1}{\rho}\frac{\partial p}{\partial x} + \nu(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2})
 \end{align}
-$$
+```
 
 - Momentum (y-direction):
-$$
+```math
 \begin{align}
 \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} = \frac{-1}{\rho}\frac{\partial p}{\partial y} + \nu(\frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2})
 \end{align}
-$$
+```
     
 - Continuity: 
-$$
+```math
 \begin{align}
 \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
 \end{align}
-$$
+```
 
 To enforce incompressibility, Chorin's projection method (Chorin, 1967) is used, requiring the solution of a Pressure Poisson Equation (PPE) at every time step. 
 
 - Pressure Poisson Equation (PPE) 
-$$
+```math
 \begin{align}
 \frac{\partial^2 p'}{\partial x^2} + \frac{\partial^2 p'}{\partial y^2} = \frac{\rho}{\Delta t}(\frac{\partial u^*}{\partial x} + \frac{\partial v^*}{\partial y})
 \end{align}
-$$
+```
 
 
 
@@ -146,7 +146,7 @@ A staggered grid was chosen over collocated grids to avoid pressure checkerboard
 </p>
 
 ## 5. Boundary Conditions
-<p align = center>
+
 <em>Table 2. Bounbdary Conditions. </em>
 
 |Boundary|Type|Description|
@@ -156,7 +156,6 @@ A staggered grid was chosen over collocated grids to avoid pressure checkerboard
 |Outlet|Neumann|Fully developed flow: $\frac{\partial{u}}{\partial{x}}=0$|
 |All boundaries|Neumann|Zero normal pressure gradient at all boundaries: $\frac{\partial{p}}{\partial{x}}=\frac{\partial{p}}{\partial{y}}=0$|
 
-</p>
 
 Note: Ghost cells are used to impose wall boundary conditions. 
 
@@ -176,47 +175,47 @@ To avoid unnecessary repetition, only the discretisation of the u-momentum equat
 #### 7.1.1 Momentum & Diffusion
 ---
 The Momentum term is discretized as: 
-$$
+```math
 \begin{align}
 MOM_u=\frac{\partial{u}}{\partial{t}} ≈ \frac{u_{i,j}^{n+1} - u_{i,j}^{n}}{\Delta t}
 \end{align}
-$$
+```
 Note: This time derivative is independent of grid staggering and therefore is evaluated at the same node as the velocity. 
 
 The Diffusion term is discretized as: 
 
-$$
+```math
 \begin{align}
 DIF_u = \nu (\frac{\partial^2{u}}{\partial{x^2}} + \frac{\partial^2{u}}{\partial{y^2}}) ≈ \frac{\nu}{h^2} \cdot (u_{i+1,j}^{n+1}+u_{i-1,j}^{n+1}+u_{i,j + 1}^{n+1}+u_{i,j - 1}^{n+1}-4u_{i,j}^{n+1})
 \end{align}
-$$
+```
 
 #### 7.1.2 Advection
 ---
 By chain rule: 
-$$
+```math
 \begin{align}
 ADV_u=u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = \frac{1}{2}\frac{\partial u^2}{\partial x} + v\frac{\partial u}{\partial y}
 \end{align}
-$$
+```
 
 Hence, the Advection term is discretized as: 
 
-$$
+```math
 \begin{align}
 ADV_u ≈ \frac{1}{2} \cdot \frac{(u_{i+1,j}^{n})^2 - (u_{i-1,j}^{n})^2}{2h} + \frac{1}{4} \cdot (v_{i,j}^{n} + v_{i,j + 1}^{n} + v_
 {i + 1,j}^{n} + v_{i + 1,j + 1}^{n})\cdot \frac{u_{i,j + 1}^{n} - u_{i,j-1}^{n}}{2h}
 \end{align}
-$$
+```
 
 Tidying up: 
 
-$$
+```math
 \begin{align}
 ADV_u ≈ \frac{1}{4h}((u_{i+1,j}^{n})^2 - (u_{i - 1,j}^{n})^2) + \frac{1}{8h} \cdot (v_{i,j}^{n} + v_{i,j + 1}^{n} + v_
 {i + 1,j}^{n} + v_{i + 1,j + 1}^{n})\cdot (u_{i,j + 1}^{n} - u_{i,j-1}^{n})
 \end{align}
-$$
+```
 
 ##### FAQ
 ---
@@ -235,42 +234,42 @@ $$
 ---
 The Pressure Gradient term is discretized as: 
 
-$$
+```math
 \begin{align}
 PG_u=\frac{\partial{p}}{\partial{x}} ≈ \frac{p_{i+1,j}^{n} - p_{i,j}^{n}}{h}
 \end{align}
-$$
+```
 
 Note: evaluated at the u node of interest.
 
 #### 7.1.4 Full Equation
 ---
 Combining all terms: 
-$$
+```math
 \begin{align}
 MOM_u + ADV_u=PG_u+DIF_u
 \end{align}
-$$
+```
 
-$$
+```math
 \begin{align}
 \frac{u_{i,j}^{n+1} - u_{i,j}^{n}}{\Delta t} + \frac{1}{4h}((u_{i+1,j}^{n})^2 - (u_{i - 1,j}^{n})^2) + \frac{1}{8h} \cdot (v_{i,j}^{n} + v_{i,j + 1}^{n} + v_{i + 1,j}^{n} + v_{i + 1,j + 1}^{n})\cdot (u_{i,j + 1}^{n} - u_{i,j-1}^{n}) = \frac{-1}{\rho} (\frac{p_{i+1,j}^{n} - p_{i,j}^{n}}{h}) + \frac{\nu}{h^2} \cdot (u_{i+1,j}^{n+1}+u_{i-1,j}^{n+1}+u_{i,j+1}^{n+1}+u_{i,j-1}^{n+1}-4u_{i,j}^{n+1})
 \end{align}
-$$
+```
 
 Separating time step $n + 1$ and $n$ terms:
-$$
+```math
 \begin{align}
 u_{i,j}^{n+1} \cdot (1 + \frac{4\nu \Delta t}{h^2}) - \frac{\nu \Delta t}{h^2} \cdot (u_{i+1,j}^{n+1}+u_{i-1,j}^{n+1}+u_{i,j+1}^{n+1}+u_{i,j-1}^{n+1}) = u_{i,j}^n - \frac{\Delta t}{\rho h} (p_{i+1,j}^{n} - p_{i,j}^{n}) -\frac{\Delta t}{4h}((u_{i+1,j}^{n})^2 - (u_{i - 1,j}^{n})^2) - \frac{1}{8h} \cdot (v_{i,j}^{n} + v_{i,j + 1}^{n} + v_{i + 1,j}^{n} + v_{i + 1,j + 1}^{n})\cdot (u_{i,j + 1}^{n} - u_{i,j-1}^{n})
 \end{align}
-$$
+```
 
 This forms a system of linear equation which can be expressed using: 
-$$
+```math
 \begin{align}
 \mathbf{A_u \cdot B_u^{n+1} = C_u^{n}}
 \end{align}
-$$
+```
 
 , where <br>
 $\mathbf{A_u} =$ Sparse matrix, <br>
@@ -280,8 +279,11 @@ $\mathbf{C_u^n} =$ Known u at the current time step.
 #### 7.2.1 Example Matrix
 ---
 For a domain with $N_x$ and $N_y$ spatial nodes: 
-$$\mathbf{A_u} \in \mathbb{R}^{(Ny-1)(Nx - 2) \times (Ny - 1)(Nx - 2)} $$
-$$\mathbf{A_u} = 
+```math
+\mathbf{A_u} \in \mathbb{R}^{(Ny-1)(Nx - 2) \times (Ny - 1)(Nx - 2)}
+```
+```math
+\mathbf{A_u} = 
 \begin{align}
 \begin{bmatrix}
 D & a & 0 & a & 0 & 0 & 0 & 0 & ...\\
@@ -294,17 +296,17 @@ a & D & a & 0 & a & 0 & 0 & 0 & ...\\
 0 & 0 & 0 & 0 & a & 0 & a & D & ...\\
 ... & ... & ... & ... & ... & ... & ... & ... & ... & 
 \end{bmatrix}
-\end{align}$$
-
-
+\end{align}
+```
 , where<br>
 $a = -\frac{\nu \Delta t}{h^2}$, and<br>
 $D = 1 - 4a$.
 
+```math
+\mathbf{B_u^{n+1}} \in \mathbb{R}^{(Ny-1)(Nx-2)}
+```
 
-$$\mathbf{B_u^{n+1}} \in \mathbb{R}^{(Ny-1)(Nx-2)}$$
-
-$$
+```math
 \begin{align}
 \mathbf{B_u^{n+1}} = 
 \begin{pmatrix}
@@ -312,68 +314,66 @@ u_{1,1}^{n+1}\cr u_{1,2}^{n+1}\cr u_{1,3}^{n+1}\cr u_{1,4}^{n+1} \cr ... \cr u_{
 u_{2,1}^{n+1}\cr u_{2,2}^{n+1}\cr u_{2,3}^{n+1}\cr u_{2,4}^{n+1} \cr ... \cr u_{Nx - 2,Ny - 1}^{n+1}
 \end{pmatrix}
 \end{align}
-$$
+```
 
-$$
+```math
 \begin{align}
 \mathbf{C_u^{n}} = 
 \begin{pmatrix}
 -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{1,1}^{n}\cr-\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{1,2}^{n}\cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{1,3}^{n}\cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{1,4}^{n} \cr ... \cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{1,Ny - 1}^{n} \cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{2,1}^{n}\cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{2,2}^{n}\cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{2,3}^{n}\cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{2,4}^{n} \cr ... \cr -\Delta t \cdot ADV_u + \Delta t \cdot PG_u + u_{Nx - 2,Ny - 1}^{n}
 \end{pmatrix}
 \end{align}
-$$
+```
 
 
 ### 7.2 Discretization of Pressure Poisson Equation PPE
 ---
 PPE is discretized as: 
 
-$$
-
+```math
 \frac{\partial^2 p'}{\partial x^2} + \frac{\partial^2 p'}{\partial y^2} ≈ 
 \frac{1}{h^2}(p'_{i+1,j} - 2p'_{i,j} + p'_{i-1,j}) + \frac{1}{h^2}(p'_{i,j-1} - 2p'_{i,j} + p'_{i,j + 1})
-
-$$
+```
 
 Tidying up: 
-$$
+```math
 \begin{align}
 \frac{\partial^2 p'}{\partial x^2} + \frac{\partial^2 p'}{\partial y^2} ≈ 
 \frac{1}{h^2}(p'_{i+1,j} + p'_{i-1,j} + p'_{i,j+1} + p'_{i,j - 1} - 4p'_{i,j})
 \end{align}
-$$
+```
 
 Continuity: 
-$$
+```math
 \frac{\partial u^*}{\partial x} + \frac{\partial v^*}{\partial y} ≈ \frac{1}{h} (u_{i+1,j}^{* n+1} - u_{i,j}^{* n+1}) + \frac{1}{h} (v_{i,j+1}^{* n+1} - v_{i,j}^{* n+1})
-$$
+```
 , which gives:
-$$
+```math
 \begin{align}
 \frac{\partial u^*}{\partial x} + \frac{\partial v^*}{\partial y} ≈ \frac{1}{h} (u_{i+1,j}^{* n+1} - u_{i,j}^{* n+1} + v_{i,j+1}^{* n+1} - v_{i,j}^{* n+1})
 \end{align}
-$$
+```
 
 Combining both sides: 
-$$
+```math
 \begin{align}
 \frac{1}{h^2}(p'_{i+1,j} + p'_{i-1,j} + p'_{i,j+1} + p'_{i,j - 1} - 4p'_{i,j}) =\frac{\rho}{\Delta t \cdot h}(u_{i+1,j}^{* n+1} - u_{i,j}^{* n+1} + v_{i,j+1}^{* n+1} - v_{i,j}^{* n+1})
 \end{align}
-$$
+```
 
 Rearrange for Jacobi iteration: 
-$$
+```math
 \begin{align}
 p'_{i,j} = \frac{1}{4}(p'_{i+1,j} + p'_{i-1,j} + p'_{i,j+1} + p'_{i,j-1} - \frac{\rho h }{\Delta t}(u_{i+1,j}^{* n+1} - u_{i,j}^{* n+1} + v_{i,j+1}^{* n+1} - v_{i,j}^{* n+1}))
 \end{align}
-$$
+```
 
 Updating Pressure: 
-$$
+```math
 \begin{align}
 p_{cor(i, j)} = p_{i,j} + p'_{i,j}
 \end{align}
-$$
+```
 , where: <br>
 $p_{cor}$ denotes the corrected pressure field, <br>
 $p$ is the pressure field before correction, and <br>
@@ -403,19 +403,19 @@ $p'$ is the pressure correction term.
 
 ## 9. Simulation Setup
 
-<p align = center>
 <em> Table 3. Simulation Parameters</em>
 
 |$Nx$|$Ny$|$h$ $(m)$|$Nt$|$\Delta t$ $(s)$|$tol$| ${u_{in}}$ $(ms^{-1})$ |  $\nu$ $(Pa\cdot s)$ | $\rho$ $(kg\cdot m^{-3})$|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |313|40|0.0026|160|0.001|0.01|0.05|0.005|1430|
 
-</p>
 
 ### 9.1 CFL Stability Check
 ---
 Since
-$$\frac{u_{max} \Delta t}{h} = 0.029 \leq 1 $$
+```math
+\frac{u_{max} \Delta t}{h} = 0.029 \leq 1
+```
 , the Courant condition is satisfied. 
 
 This condition ensures the stability of the explicit advection discretisation. 
